@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,6 +13,8 @@ public class CheatActivity extends AppCompatActivity {
 
     private static final String EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true";
     private static final String EXTRA_ANSWER_SHOWN = "com.bignerdranch.android.geoquiz.answer_shown";
+    private static final String EXTRA_IS_CHEATER = "com.bignerdranch.android.geoquiz.is_cheater";
+
 
     public static Intent newIntent(Context packageContext, boolean answerIsTrue){
         Intent intent = new Intent(packageContext, CheatActivity.class);
@@ -23,7 +26,14 @@ public class CheatActivity extends AppCompatActivity {
         return result.getBooleanExtra(EXTRA_ANSWER_SHOWN, false);
     }
 
+    public static Intent cheatIntent(Context packageContext, boolean isCheater){
+        Intent intent = new Intent(packageContext, CheatActivity.class);
+        intent.putExtra(EXTRA_IS_CHEATER, isCheater);
+        return intent;
+    }
+
     private boolean mAnswerIsTrue;
+    private boolean mIsCheater;
 
     private TextView mAnswerTextView;
     private Button mShowAnswerButton;
@@ -32,6 +42,10 @@ public class CheatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
+
+        if(savedInstanceState != null){
+            mIsCheater = savedInstanceState.getBoolean(EXTRA_IS_CHEATER);
+        }
 
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
         mAnswerTextView = (TextView)findViewById(R.id.answer_text_view);
@@ -55,5 +69,16 @@ public class CheatActivity extends AppCompatActivity {
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
         setResult(RESULT_OK, data);
     }
-
+    private void setIsCheat(boolean isCheater){
+        Intent data = new Intent();
+        data.putExtra(EXTRA_IS_CHEATER, isCheater);
+        setResult(RESULT_OK, data);
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean(EXTRA_IS_CHEATER, mIsCheater);
+    }
 }
+
+
